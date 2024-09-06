@@ -314,6 +314,60 @@ void terminate(int vi, int degree, int jobId) {
   }
 }
 
+typedef ViLock = int Function(
+    int vi,
+    int lockType,
+    int timeout,
+    ViConstKeyId requestedKey,
+    Pointer<ViChar> accessKey,
+    );
+/// Establishes an access mode to the specified resources.
+String lock(int vi, int lockType, int timeout, String requestedKey) {
+  Pointer<Utf8> reqKey = requestedKey.toNativeUtf8();
+  Pointer<Utf8> accKey = malloc<Utf8>(MAX_STRING_LENGTH);
+  int status = viLock(vi, lockType, timeout, reqKey, accKey);
+
+  if(status == VI_SUCCESS_NESTED_EXCLUSIVE) {
+    malloc.free(reqKey); malloc.free(accKey);
+    throw VI_SUCCESS_NESTED_EXCLUSIVE_EXCEPTION;
+  } else if (status == VI_SUCCESS_NESTED_SHARED) {
+    malloc.free(reqKey); malloc.free(accKey);
+    throw VI_SUCCESS_NESTED_SHARED_EXCEPTION;
+  } else if (status == VI_ERROR_INV_OBJECT) {
+    malloc.free(reqKey); malloc.free(accKey);
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_RSRC_LOCKED) {
+    malloc.free(reqKey); malloc.free(accKey);
+    throw VI_ERROR_RSRC_LOCKED_EXCEPTION;
+  } else if (status == VI_ERROR_INV_LOCK_TYPE) {
+    malloc.free(reqKey); malloc.free(accKey);
+    throw VI_ERROR_INV_LOCK_TYPE_EXCEPTION;
+  } else if (status == VI_ERROR_INV_ACCESS_KEY) {
+    malloc.free(reqKey); malloc.free(accKey);
+    throw VI_ERROR_INV_ACCESS_KEY_EXCEPTION;
+  } else if (status == VI_ERROR_TMO) {
+    malloc.free(reqKey); malloc.free(accKey);
+    throw VI_ERROR_TMO_EXCEPTION;
+  }
+
+  String accessKey = accKey.toDartString();
+  malloc.free(reqKey); malloc.free(accKey);
+  return accessKey;
+}
+
+/// Relinquishes a lock for the specified resource.
+void unLock(int vi) {
+  int status = viUnlock(vi);
+
+  if(status == VI_ERROR_INV_OBJECT) {
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_NSUP_OPER) {
+    throw VI_ERROR_NSUP_OPER_EXCEPTION;
+  } else if (status ==VI_ERROR_WINDOW_NMAPPED) {
+    throw VI_ERROR_WINDOW_NMAPPED_EXCEPTION;
+  }
+}
+
 /// Writes data to device or interface synchronously.
 int write(int vi, String data) {
   Pointer<Utf8> buf = data.toNativeUtf8();
@@ -362,6 +416,7 @@ int write(int vi, String data) {
   }
 
   int returnCount= retCnt.asTypedList(1).first;
+  malloc.free(buf); malloc.free(retCnt);
   return returnCount;
 }
 
@@ -428,8 +483,8 @@ String read(int session) {
   }
 
   int returnCount= retCnt.asTypedList(1).first;
-
   String data = buf.toDartString(length: returnCount);
+  malloc.free(buf); malloc.free(retCnt);
 
   return data;
 }

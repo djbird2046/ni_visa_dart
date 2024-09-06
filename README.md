@@ -15,22 +15,24 @@ A Dart SDK for NI-VISA(with C), NOT `NI` OFFICIAL
 1. Confirm your computer has installed `NI-VISA`. (If you don't know what is NI-VISA, it means do not need it).
 2. Example:
     ```dart
-    void main() {
-      // Initial VISA Resource Manager
-      Session resourceManagerSession = openDefaultRM();
-    
-      // Open VISA session for special instrument
-      Session session = open(resourceManagerSession, "ASRL1::INSTR");
-    
-      // Send "*IDN?" to instrument. Query instrument id.
-      ReturnCount returnCount = write(session, "*IDN?\n");
-    
-      // Read data from instrument
-      ReturnData returnData = read(session);
-    
-      // Close VISA session
-      close(session);
-    }
+   void main() {
+   // Initial VISA Resource Manager
+   int resourceManagerSession = openDefaultRM();
+   
+   // Open VISA session for special instrument
+   int session = open(resourceManagerSession, "ASRL1::INSTR");
+   
+   // Send "*IDN?" to instrument. Query instrument id.
+   int returnCount = write(session, "*IDN?\n");
+   print("returnCount: $returnCount");
+   
+   // Read data from instrument
+   String returnData = read(session);
+   print("returnData: $returnData");
+   
+   // Close VISA session
+   close(session);
+   }
     ```
 
 ## Planning
@@ -47,8 +49,8 @@ A Dart SDK for NI-VISA(with C), NOT `NI` OFFICIAL
 | viGetAttribute       | ✅    |
 | viStatusDesc         | ✅    |
 | viTerminate          | ✅    |
-| viLock               | TODO |
-| viUnLock             | TODO |
+| viLock               | ✅    |
+| viUnLock             | ✅    |
 | viEnableEvent        | TODO |
 | viDisableEvent       | TODO |
 | viDiscardEvents      | TODO |

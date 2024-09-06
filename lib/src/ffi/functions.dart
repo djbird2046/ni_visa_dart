@@ -10,9 +10,9 @@ final DynamicLibrary visaLib = Platform.isMacOS
 
 // Resource Manager Functions and Operations
 
-/// PURPOSE:
+/// PURPOSE
 /// Queries a VISA system to locate the resources associated with a specified interface.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viOpenDefaultRM() function must be called before any VISA operations can
 /// be invoked. The first call to this function initializes the VISA system, including the
 /// Default Resource Manager resource, and also returns a session to that resource.
@@ -25,9 +25,9 @@ typedef ViOpenDefaultRMNative = ViStatus Function(Pointer<ViSession> vi);
 typedef ViOpenDefaultRM = int Function(Pointer<ViSession> vi);
 final ViOpenDefaultRM viOpenDefaultRM = visaLib.lookupFunction<ViOpenDefaultRMNative, ViOpenDefaultRM>('viOpenDefaultRM');
 
-/// PURPOSE:
+/// PURPOSE
 /// Queries a VISA system to locate the resources associated with a specified interface.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viFindRsrc() operation matches the value specified in the expr parameter
 /// with the resources available for a particular interface. A regular expression is a string
 /// consisting of ordinary characters as well as special characters. You use a regular
@@ -62,9 +62,9 @@ typedef ViFindRsrc = int Function(
 );
 final ViFindRsrc viFindRsrc = visaLib.lookupFunction<ViFindRsrcNative, ViFindRsrc>('viFindRsrc');
 
-/// PURPOSE:
+/// PURPOSE
 /// Returns the next resource from the list of resources found during a previous call to viFindRsrc().
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viFindNext() operation returns the next device found in the list created by viFindRsrc().
 /// The list is referenced by the handle that was returned by viFindRsrc().
 typedef ViFindNextNative = ViStatus Function(
@@ -77,9 +77,9 @@ typedef ViFindNext = int Function(
 );
 final ViFindNext viFindNext = visaLib.lookupFunction<ViFindNextNative, ViFindNext>('viFindNext');
 
-/// PURPOSE:
+/// PURPOSE
 /// Parse a resource string to get the interface information.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// This operation parses a resource string to verify its validity. It should succeed for all
 /// strings returned by viFindRsrc() and recognized by viOpen(). This operation is
 /// useful if you want to know what interface a given resource descriptor would use
@@ -105,9 +105,9 @@ typedef ViParseRsrc = int Function(
 );
 final ViParseRsrc viParseRsrc = visaLib.lookupFunction<ViParseRsrcNative, ViParseRsrc>('viParseRsrc');
 
-/// PURPOSE:
+/// PURPOSE
 /// Parse a resource string to get extended interface information.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// This operation parses a resource string to verify its validity. It should succeed for all
 /// strings returned by viFindRsrc() and recognized by viOpen(). This operation is
 /// useful if you want to know what interface a given resource descriptor would use
@@ -145,9 +145,9 @@ typedef ViParseRsrcEx = int Function(
     );
 final ViParseRsrcEx viParseRsrcEx = visaLib.lookupFunction<ViParseRsrcExNative, ViParseRsrcEx>('viParseRsrcEx');
 
-/// PURPOSE:
+/// PURPOSE
 /// Opens a session to the specified resource.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viOpen() operation opens a session to the specified resource. It returns a
 /// session identifier that can be used to call any other operations of that resource. The
 /// address string passed to viOpen() must uniquely identify a resource. Refer to VISA
@@ -181,9 +181,9 @@ final ViOpen viOpen = visaLib.lookupFunction<ViOpenNative, ViOpen>('viOpen');
 
 // Resource Template Operations
 
-/// PURPOSE:
+/// PURPOSE
 /// Closes the specified session, event, or find list.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viClose() operation closes a session, event, or a find list. In this process all the
 /// data structures that had been allocated for the specified vi are freed. Calling viClose()
 /// on a VISA Resource Manager session will also close all I/O sessions associated
@@ -192,9 +192,9 @@ typedef ViCloseNative = ViStatus Function(ViObject vi);
 typedef ViClose = int Function(int vi);
 final ViClose viClose = visaLib.lookupFunction<ViCloseNative, ViClose>('viClose');
 
-/// PURPOSE:
+/// PURPOSE
 /// Sets the state of an attribute.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viSetAttribute() operation is used to modify the state of an attribute for the
 /// specified object.
 /// Both VI_WARN_NSUP_ATTR_STATE and VI_ERROR_NSUP_ATTR_STATE indicate
@@ -227,9 +227,9 @@ typedef ViSetAttribute = int Function(
     );
 final ViSetAttribute viSetAttribute = visaLib.lookupFunction<ViSetAttributeNative, ViSetAttribute>('viSetAttribute');
 
-/// PURPOSE:
+/// PURPOSE
 /// Retrieves the state of an attribute.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viGetAttribute() operation is used to retrieve the state of an attribute for
 /// the specified session, event, or find list.
 /// The output parameter attrState is of the type of the attribute actually being retrieved.
@@ -249,9 +249,9 @@ typedef ViGetAttribute = int Function(
     );
 final ViGetAttribute viGetAttribute = visaLib.lookupFunction<ViGetAttributeNative, ViGetAttribute>('viGetAttribute');
 
-/// PURPOSE:
+/// PURPOSE
 /// Returns a user-readable description of the status code passed to the operation.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viStatusDesc() operation is used to retrieve a user-readable string that
 /// describes the status code presented. If the string cannot be interpreted, the operation
 /// returns the warning code VI_WARN_UNKNOWN_STATUS. However, the output string
@@ -268,9 +268,9 @@ typedef ViStatusDesc = int Function(
     );
 final ViStatusDesc viStatusDesc = visaLib.lookupFunction<ViStatusDescNative, ViStatusDesc>('viStatusDesc');
 
-/// PURPOSE:
+/// PURPOSE
 /// Requests a VISA session to terminate normal execution of an operation.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// This operation is used to request a session to terminate normal execution of an
 /// operation, as specified by the jobId parameter. The jobId parameter is a unique value
 /// generated from each call to an asynchronous operation.
@@ -292,6 +292,51 @@ typedef ViTerminate = int Function(
     );
 final ViTerminate viTerminate = visaLib.lookupFunction<ViTerminateNative, ViTerminate>('viTerminate');
 
+/// PURPOSE
+/// Establishes an access mode to the specified resources.
+/// DESCRIPTION
+/// This operation is used to obtain a lock on the specified resource. The caller can specify
+/// the type of lock requested—exclusive or shared lock—and the length of time the
+/// operation will suspend while waiting to acquire the lock before timing out. This
+/// operation can also be used for sharing and nesting locks.
+/// The requestedKey and the accessKey parameters apply only to shared locks. These
+/// parameters are not applicable when using the lock type VI_EXCLUSIVE_LOCK; in
+/// this case, requestedKey and accessKey should be set to VI_NULL. VISA allows user
+/// applications to specify a key to be used for lock sharing, through the use of the
+/// requestedKey parameter. Alternatively, a user application can pass VI_NULL for the
+/// requestedKey parameter when obtaining a shared lock, in which case VISA will
+/// generate a unique access key and return it through the accessKey parameter. If a user
+/// application does specify a requestedKey value, VISA will try to use this value for the
+/// accessKey. As long as the resource is not locked, VISA will use the requestedKey as the
+/// access key and grant the lock. When the operation succeeds, the requestedKey will be
+/// copied into the user buffer referred to by the accessKey parameter.
+/// The session that gained a shared lock can pass the accessKey to other sessions for the
+/// purpose of sharing the lock. The session wanting to join the group of sessions sharing
+/// the lock can use the key as an input value to the requestedKey parameter. VISA will
+/// add the session to the list of sessions sharing the lock, as long as the requestedKey
+/// value matches the accessKey value for the particular resource. The session obtaining a
+/// shared lock in this manner will then have the same access privileges as the original
+/// session that obtained the lock.
+/// It is also possible to obtain nested locks through this operation. To acquire nested
+/// locks, invoke the viLock() operation with the same lock type as the previous
+/// invocation of this operation. For each session, viLock() and viUnlock() share a
+/// lock count, which is initialized to 0. Each invocation of viLock() for the same
+/// session (and for the same lockType) increases the lock count. In the case of a shared
+/// lock, it returns with the same accessKey every time. When a session locks the resource
+/// a multiple number of times, it is necessary to invoke the viUnlock() operation an
+/// equal number of times in order to unlock the resource. That is, the lock count
+/// increments for each invocation of viLock(), and decrements for each invocation of
+/// viUnlock(). A resource is actually unlocked only when the lock count is 0.
+/// The VISA locking mechanism enforces arbitration of accesses to resources on an
+/// individual basis. If a session locks a resource, operations invoked by other sessions to
+/// the same resource are serviced or returned with a locking error, depending on the
+/// operation and the type of lock used. If a session has an exclusive lock, other sessions
+/// cannot modify global attributes or invoke operations, but can still get attributes and
+/// set local attributes. If the session has a shared lock, other sessions that have shared
+/// locks can also modify global attributes and invoke operations. Regardless of which
+/// type of lock a session has, if the session is closed without first being unlocked, VISA
+/// automatically performs a viUnlock() on that session.
+/// The locking mechanism works for all processes and resources existing on the same
 typedef ViLockNative = ViStatus Function(
     ViSession vi,
     ViAccessMode lockType,
@@ -308,6 +353,11 @@ typedef ViLock = int Function(
     );
 final ViLock viLock = visaLib.lookupFunction<ViLockNative, ViLock>('viLock');
 
+/// PURPOSE
+/// Relinquishes a lock for the specified resource.
+/// DESCRIPTION
+/// This operation is used to relinquish the lock previously obtained using the viLock()
+/// operation.
 typedef ViUnlockNative = ViStatus Function(ViSession vi);
 typedef ViUnlock = int Function(int vi);
 final ViUnlock viUnlock = visaLib.lookupFunction<ViUnlockNative, ViUnlock>('viUnlock');
@@ -438,9 +488,9 @@ typedef ViReadToFile = int Function(
     );
 final ViReadToFile viReadToFile = visaLib.lookupFunction<ViReadToFileNative, ViReadToFile>('viReadToFile');
 
-/// PURPOSE:
+/// PURPOSE
 /// Writes data to device or interface synchronously.
-/// DESCRIPTION:
+/// DESCRIPTION
 /// The viWrite() operation synchronously transfers data. The data to be written is in
 /// the buffer represented by buf. This operation returns only when the transfer
 /// terminates. Only one synchronous write operation can occur at any one time.

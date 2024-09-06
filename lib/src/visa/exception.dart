@@ -6,6 +6,9 @@ final VISAException VI_SUCCESS_DEV_NPRESENT_EXCEPTION = VISAException(code: VI_S
 final VISAException VI_SUCCESS_TERM_CHAR_EXCEPTION = VISAException(code: VI_SUCCESS_TERM_CHAR, identifier: "VI_SUCCESS_TERM_CHAR", message: "The specified termination character was read but no END indicator was received. This completion code is returned regardless of whether the number of bytes read is equal to count. ");
 final VISAException VI_SUCCESS_MAX_CNT_EXCEPTION = VISAException(code: VI_SUCCESS_MAX_CNT, identifier: "VI_SUCCESS_MAX_CNT", message: "The number of bytes read is equal to count. No END indicator was received and no termination character was read. ");
 final VISAException VI_WARN_EXT_FUNC_NIMPL_EXCEPTION = VISAException(code: VI_WARN_EXT_FUNC_NIMPL, identifier: "VI_WARN_EXT_FUNC_NIMPL", message: "The operation succeeded, but a lower level driver did not implement the extended functionality.");
+final VISAException VI_SUCCESS_NESTED_EXCLUSIVE_EXCEPTION = VISAException(code: VI_SUCCESS_NESTED_EXCLUSIVE, identifier: "VI_SUCCESS_NESTED_EXCLUSIVE", message: "Specified access mode is successfully acquired, and this session has nested exclusive locks.");
+final VISAException VI_SUCCESS_NESTED_SHARED_EXCEPTION = VISAException(code: VI_SUCCESS_NESTED_SHARED, identifier: "VI_SUCCESS_NESTED_SHARED", message: "Specified access mode is successfully acquired, and this session has nested shared locks.");
+
 /// WARNING
 final VISAException VI_WARN_CONFIG_NLOADED_EXCEPTION = VISAException(code: VI_WARN_CONFIG_NLOADED, identifier: "VI_WARN_CONFIG_NLOADED", message: "At least one configured Passport module could not be loaded.");
 final VISAException VI_WARN_NULL_OBJECT_EXCEPTION = VISAException(code: VI_WARN_NULL_OBJECT, identifier: "VI_WARN_NULL_OBJECT", message: "The specified object reference is uninitialized. ");
@@ -45,4 +48,6 @@ final VISAException VI_ERROR_NSUP_ATTR_STATE_EXCEPTION = VISAException(code: VI_
 final VISAException VI_ERROR_ATTR_READONLY_EXCEPTION = VISAException(code: VI_ERROR_ATTR_READONLY, identifier: "VI_ERROR_ATTR_READONLY", message: "The specified attribute is Read Only.");
 final VISAException VI_ERROR_INV_JOB_ID_EXCEPTION = VISAException(code: VI_ERROR_INV_JOB_ID, identifier: "VI_ERROR_INV_JOB_ID", message: "Specified job identifier is invalid.");
 final VISAException VI_ERROR_INV_DEGREE_EXCEPTION = VISAException(code: VI_ERROR_INV_DEGREE, identifier: "VI_ERROR_INV_DEGREE", message: "Specified degree is invalid.");
-
+final VISAException VI_ERROR_INV_LOCK_TYPE_EXCEPTION = VISAException(code: VI_ERROR_INV_LOCK_TYPE, identifier: "VI_ERROR_INV_LOCK_TYPE", message: "Specified lockType is not supported by this resource.");
+final VISAException VI_ERROR_INV_ACCESS_KEY_EXCEPTION = VISAException(code: VI_ERROR_INV_ACCESS_KEY, identifier: "VI_ERROR_INV_ACCESS_KEY", message: "The requestedKey value passed in is not a valid accessKey to the specified resource.");
+final VISAException VI_ERROR_WINDOW_NMAPPED_EXCEPTION = VISAException(code: VI_ERROR_WINDOW_NMAPPED, identifier: "VI_ERROR_WINDOW_NMAPPED", message: "The specified session is not currently mapped.");
