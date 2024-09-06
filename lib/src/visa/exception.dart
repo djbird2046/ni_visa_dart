@@ -1,15 +1,17 @@
 import 'constant.dart';
 import 'model.dart';
 
-
+/// SUCCESS but not good
 final VISAException VI_SUCCESS_DEV_NPRESENT_EXCEPTION = VISAException(code: VI_SUCCESS_DEV_NPRESENT, identifier: "VI_SUCCESS_DEV_NPRESENT", message: "The given session reference is invalid. ");
 final VISAException VI_SUCCESS_TERM_CHAR_EXCEPTION = VISAException(code: VI_SUCCESS_TERM_CHAR, identifier: "VI_SUCCESS_TERM_CHAR", message: "The specified termination character was read but no END indicator was received. This completion code is returned regardless of whether the number of bytes read is equal to count. ");
 final VISAException VI_SUCCESS_MAX_CNT_EXCEPTION = VISAException(code: VI_SUCCESS_MAX_CNT, identifier: "VI_SUCCESS_MAX_CNT", message: "The number of bytes read is equal to count. No END indicator was received and no termination character was read. ");
 final VISAException VI_WARN_EXT_FUNC_NIMPL_EXCEPTION = VISAException(code: VI_WARN_EXT_FUNC_NIMPL, identifier: "VI_WARN_EXT_FUNC_NIMPL", message: "The operation succeeded, but a lower level driver did not implement the extended functionality.");
-
+/// WARNING
 final VISAException VI_WARN_CONFIG_NLOADED_EXCEPTION = VISAException(code: VI_WARN_CONFIG_NLOADED, identifier: "VI_WARN_CONFIG_NLOADED", message: "At least one configured Passport module could not be loaded.");
 final VISAException VI_WARN_NULL_OBJECT_EXCEPTION = VISAException(code: VI_WARN_NULL_OBJECT, identifier: "VI_WARN_NULL_OBJECT", message: "The specified object reference is uninitialized. ");
-
+final VISAException VI_WARN_NSUP_ATTR_STATE_EXCEPTION = VISAException(code: VI_WARN_NSUP_ATTR_STATE, identifier: "VI_WARN_NSUP_ATTR_STATE", message: "Although the specified attribute state is valid, it is not supported by this implementation.");
+final VISAException VI_WARN_UNKNOWN_STATUS_EXCEPTION = VISAException(code: VI_WARN_UNKNOWN_STATUS, identifier: "VI_WARN_UNKNOWN_STATUS", message: "The status code passed to the operation could not be interpreted.");
+/// ERROR
 final VISAException VI_ERROR_SYSTEM_ERROR_EXCEPTION = VISAException(code: VI_ERROR_SYSTEM_ERROR, identifier: "VI_ERROR_SYSTEM_ERROR", message: "The VISA system failed to initialize.");
 final VISAException VI_ERROR_ALLOC_EXCEPTION = VISAException(code: VI_ERROR_ALLOC, identifier: "VI_ERROR_ALLOC", message: "Insufficient system resources to perform necessary memory allocation. ");
 final VISAException VI_ERROR_INV_SETUP_EXCEPTION = VISAException(code: VI_ERROR_INV_SETUP, identifier: "VI_ERROR_INV_SETUP", message: "Unable to start operation because setup is invalid. ");
@@ -38,6 +40,9 @@ final VISAException VI_ERROR_ASRL_PARITY_EXCEPTION = VISAException(code: VI_ERRO
 final VISAException VI_ERROR_ASRL_FRAMING_EXCEPTION = VISAException(code: VI_ERROR_ASRL_FRAMING, identifier: "VI_ERROR_ASRL_FRAMING", message: "A framing error occurred during transfer. ");
 final VISAException VI_ERROR_ASRL_OVERRUN_EXCEPTION = VISAException(code: VI_ERROR_ASRL_OVERRUN, identifier: "VI_ERROR_ASRL_OVERRUN", message: "An overrun error occurred during transfer. A character was not read from the hardware before the next character arrived. ");
 final VISAException VI_ERROR_CLOSING_FAILED_EXCEPTION = VISAException(code: VI_ERROR_CLOSING_FAILED, identifier: "VI_ERROR_CLOSING_FAILED", message: "Unable to deallocate the previously allocated data structures corresponding to this session or object reference. ");
-
-
+final VISAException VI_ERROR_NSUP_ATTR_EXCEPTION = VISAException(code: VI_ERROR_NSUP_ATTR, identifier: "VI_ERROR_NSUP_ATTR", message: "The specified attribute is not defined by the referenced object.");
+final VISAException VI_ERROR_NSUP_ATTR_STATE_EXCEPTION = VISAException(code: VI_ERROR_NSUP_ATTR_STATE, identifier: "VI_ERROR_NSUP_ATTR_STATE", message: "The specified state of the attribute is not valid, or is not supported as defined by the object.");
+final VISAException VI_ERROR_ATTR_READONLY_EXCEPTION = VISAException(code: VI_ERROR_ATTR_READONLY, identifier: "VI_ERROR_ATTR_READONLY", message: "The specified attribute is Read Only.");
+final VISAException VI_ERROR_INV_JOB_ID_EXCEPTION = VISAException(code: VI_ERROR_INV_JOB_ID, identifier: "VI_ERROR_INV_JOB_ID", message: "Specified job identifier is invalid.");
+final VISAException VI_ERROR_INV_DEGREE_EXCEPTION = VISAException(code: VI_ERROR_INV_DEGREE, identifier: "VI_ERROR_INV_DEGREE", message: "Specified degree is invalid.");
 

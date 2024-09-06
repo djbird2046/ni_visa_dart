@@ -12,10 +12,10 @@ class VISAException implements Exception {
   }
 }
 
-class Session {
-  int id;
-  Session({required this.id});
-}
+// class Session {
+//   int id;
+//   Session({required this.id});
+// }
 
 class Resources {
   List<int> viList;
@@ -24,15 +24,15 @@ class Resources {
   Resources({required this.viList, required this.description});
 }
 
-class ReturnCount {
-  int count;
-  ReturnCount({required this.count});
-}
+// class ReturnCount {
+//   int count;
+//   ReturnCount({required this.count});
+// }
 
-class ReturnData {
-  String data;
-  ReturnData({required this.data});
-}
+// class ReturnData {
+//   String data;
+//   ReturnData({required this.data});
+// }
 
 class Interface {
   int type;

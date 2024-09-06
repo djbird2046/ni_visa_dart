@@ -192,6 +192,29 @@ typedef ViCloseNative = ViStatus Function(ViObject vi);
 typedef ViClose = int Function(int vi);
 final ViClose viClose = visaLib.lookupFunction<ViCloseNative, ViClose>('viClose');
 
+/// PURPOSE:
+/// Sets the state of an attribute.
+/// DESCRIPTION:
+/// The viSetAttribute() operation is used to modify the state of an attribute for the
+/// specified object.
+/// Both VI_WARN_NSUP_ATTR_STATE and VI_ERROR_NSUP_ATTR_STATE indicate
+/// that the specified attribute state is not supported. A resource normally returns the
+/// error code VI_ERROR_NSUP_ATTR_STATE when it cannot set a specified attribute
+/// state. The completion code VI_WARN_NSUP_ATTR_STATE is intended to alert the
+/// application that although the specified optional attribute state is not supported, the
+/// application should not fail. One example is attempting to set an attribute value that
+/// would increase performance speeds. This is different than attempting to set an
+/// attribute value that specifies required but nonexistent hardware (such as specifying a
+/// VXI ECL trigger line when no hardware support exists) or a value that would change
+/// assumptions a resource might make about the way data is stored or formatted (such
+/// as byte order).
+/// Some attributes documented as being generally Read/Write may at times be Read
+/// Only. This is usually the case when an attribute configures how the VISA driver receives
+/// events of a given type, and the event type associated with that attribute is currently
+/// enabled. Under these circumstances, calling viSetAttribute on that attribute
+/// returns VI_ERROR_ATTR_READONLY.
+/// The error code VI_ERROR_RSRC_LOCKED is returned only if the specified attribute is
+/// Read/Write and Global, and the resource is locked by another session.
 typedef ViSetAttributeNative = ViStatus Function(
     ViObject vi,
     ViAttr attrName,
@@ -204,6 +227,16 @@ typedef ViSetAttribute = int Function(
     );
 final ViSetAttribute viSetAttribute = visaLib.lookupFunction<ViSetAttributeNative, ViSetAttribute>('viSetAttribute');
 
+/// PURPOSE:
+/// Retrieves the state of an attribute.
+/// DESCRIPTION:
+/// The viGetAttribute() operation is used to retrieve the state of an attribute for
+/// the specified session, event, or find list.
+/// The output parameter attrState is of the type of the attribute actually being retrieved.
+/// For example, when retrieving an attribute that is defined as a ViBoolean, your
+/// application should pass a reference to a variable of type ViBoolean. Similarly, if the
+/// attribute is defined as being ViUInt32, your application should pass a reference to a
+/// variable of type ViUInt32.
 typedef ViGetAttributeNative = ViStatus Function(
     ViObject vi,
     ViAttr attrName,
@@ -216,6 +249,13 @@ typedef ViGetAttribute = int Function(
     );
 final ViGetAttribute viGetAttribute = visaLib.lookupFunction<ViGetAttributeNative, ViGetAttribute>('viGetAttribute');
 
+/// PURPOSE:
+/// Returns a user-readable description of the status code passed to the operation.
+/// DESCRIPTION:
+/// The viStatusDesc() operation is used to retrieve a user-readable string that
+/// describes the status code presented. If the string cannot be interpreted, the operation
+/// returns the warning code VI_WARN_UNKNOWN_STATUS. However, the output string
+/// desc is valid regardless of the status return value.
 typedef ViStatusDescNative = ViStatus Function(
     ViObject vi,
     ViStatus status,
@@ -228,6 +268,18 @@ typedef ViStatusDesc = int Function(
     );
 final ViStatusDesc viStatusDesc = visaLib.lookupFunction<ViStatusDescNative, ViStatusDesc>('viStatusDesc');
 
+/// PURPOSE:
+/// Requests a VISA session to terminate normal execution of an operation.
+/// DESCRIPTION:
+/// This operation is used to request a session to terminate normal execution of an
+/// operation, as specified by the jobId parameter. The jobId parameter is a unique value
+/// generated from each call to an asynchronous operation.
+/// If a user passes VI_NULL as the jobId value to viTerminate(), VISA will abort any
+/// calls in the current process executing on the specified vi. Any call that is terminated
+/// this way should return VI_ERROR_ABORT. Due to the nature of multi-threaded
+/// systems, for example where operations in other threads may complete normally
+/// before the operation viTerminate() has any effect, the specified return value is
+/// not guaranteed.
 typedef ViTerminateNative = ViStatus Function(
     ViObject vi,
     Uint16 degree,

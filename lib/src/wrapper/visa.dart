@@ -1,10 +1,10 @@
-import '../ni_visa_dart.dart' as vi;
+import '../../ni_visa.dart' as vi;
 
 class VISA {
-  static  vi.Session _resourceManagerSession = vi.openDefaultRM();
-  static vi.Resources listResource(String expression) => vi.findRsrc(_resourceManagerSession.id, expression);
+  static  int _resourceManagerSession = vi.openDefaultRM();
+  static vi.Resources listResource(String expression) => vi.findRsrc(_resourceManagerSession, expression);
   
-  late vi.Session _session;
+  late int _session;
 
   VISA(String resourceName, {int? mode, int? timeout}) {
     _session = vi.open(_resourceManagerSession, resourceName, mode: mode, timeout: timeout);
@@ -15,7 +15,7 @@ class VISA {
   }
 
   String read() {
-    return vi.read(_session).data;
+    return vi.read(_session);
   }
 
   dispose() {

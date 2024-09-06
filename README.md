@@ -9,6 +9,7 @@ A Dart SDK for NI-VISA(with C), NOT `NI` OFFICIAL
 ## Feature
 - Dart FFI wrapper for `NI-VISA`/C
 - Convert operation status to throw `VISAException` when NOT `VI_SUCCESS` 
+- Only support 64bits
 
 ## Usage
 1. Confirm your computer has installed `NI-VISA`. (If you don't know what is NI-VISA, it means do not need it).
@@ -42,12 +43,12 @@ A Dart SDK for NI-VISA(with C), NOT `NI` OFFICIAL
 | viParseRsrcEx        | ✅    |
 | viOpen               | ✅    |
 | viClose              | ✅    |
-| viSetAttribute       | TODO |
-| viGetAttribute       | TODO |
-| viStatusDesc         | TODO |
-| viTerminate          | TODO |
+| viSetAttribute       | ✅    |
+| viGetAttribute       | ✅    |
+| viStatusDesc         | ✅    |
+| viTerminate          | ✅    |
 | viLock               | TODO |
-| viLock               | TODO |
+| viUnLock             | TODO |
 | viEnableEvent        | TODO |
 | viDisableEvent       | TODO |
 | viDiscardEvents      | TODO |

@@ -10,7 +10,7 @@ const int MAX_LIST_LENGTH = 128;
 const int MAX_STRING_LENGTH = 256;
 
 /// This function returns a session to the Default Resource Manager resource.
-Session openDefaultRM() {
+int openDefaultRM() {
   Pointer<Uint32> vi = malloc<Uint32>(1);
   int status = viOpenDefaultRM(vi);
   if(status == VI_WARN_CONFIG_NLOADED) {
@@ -30,17 +30,17 @@ Session openDefaultRM() {
     throw VI_ERROR_LIBRARY_NFOUND;
   }
 
-  int id = vi.asTypedList(1).first;
+  int session = vi.asTypedList(1).first;
   malloc.free(vi);
-  return Session(id: id);
+  return session;
 }
 
 /// Queries a VISA system to locate the resources associated with a specified interface
-Resources findRsrc(int sessionId, String expression) {
+Resources findRsrc(int session, String expression) {
   Pointer<ViFindList> vi = malloc<Uint32>(MAX_LIST_LENGTH);
   Pointer<ViUInt32> retCnt =  malloc<Uint32>(1);
   Pointer<ViChar> desc = malloc<Utf8>(MAX_STRING_LENGTH);
-  int status = viFindRsrc(sessionId, expression.toNativeUtf8(), vi, retCnt, desc);
+  int status = viFindRsrc(session, expression.toNativeUtf8(), vi, retCnt, desc);
   if(status == VI_ERROR_INV_OBJECT) {
     malloc.free(vi); malloc.free(retCnt); malloc.free(desc);
     throw VI_ERROR_INV_OBJECT_EXCEPTION;
@@ -94,11 +94,11 @@ String findNext(int findList, String description) {
 }
 
 ///Parse a resource string to get extended interface information.
-Interface parseRsrc(Session resourceManagerSession, String resourceName) {
+Interface parseRsrc(int resourceManagerSession, String resourceName) {
   Pointer<Utf8> name = resourceName.toNativeUtf8();
   Pointer<Uint16> intfType = malloc<Uint16>(1);
   Pointer<Uint16> intfNum = malloc<Uint16>(1);
-  int status = viParseRsrc(resourceManagerSession.id, name, intfType, intfNum);
+  int status = viParseRsrc(resourceManagerSession, name, intfType, intfNum);
 
   if(status == VI_ERROR_INV_OBJECT) {
     malloc.free(intfType); malloc.free(intfNum);
@@ -132,7 +132,7 @@ Interface parseRsrc(Session resourceManagerSession, String resourceName) {
 }
 
 /// Parse a resource string to get extended interface information.
-ExpandedInterface parseRsrcEx(Session resourceManagerSession, String resourceName) {
+ExpandedInterface parseRsrcEx(int resourceManagerSession, String resourceName) {
   Pointer<Utf8> rsrcName = resourceName.toNativeUtf8();
   Pointer<Uint16> intfType = malloc<Uint16>(1);
   Pointer<Uint16> intfNum = malloc<Uint16>(1);
@@ -140,7 +140,7 @@ ExpandedInterface parseRsrcEx(Session resourceManagerSession, String resourceNam
   Pointer<ViChar> expUnaliasedName = malloc<ViChar>(MAX_STRING_LENGTH);
   Pointer<ViChar> aliasIfExs = malloc<ViChar>(MAX_STRING_LENGTH);
 
-  int status = viParseRsrcEx(resourceManagerSession.id, rsrcName, intfType, intfNum, rsrcClass, expUnaliasedName, aliasIfExs);
+  int status = viParseRsrcEx(resourceManagerSession, rsrcName, intfType, intfNum, rsrcClass, expUnaliasedName, aliasIfExs);
 
   if(status == VI_WARN_EXT_FUNC_NIMPL) {
     malloc.free(intfType); malloc.free(intfNum); malloc.free(rsrcClass); malloc.free(expUnaliasedName); malloc.free(aliasIfExs);
@@ -182,11 +182,11 @@ ExpandedInterface parseRsrcEx(Session resourceManagerSession, String resourceNam
 }
 
 /// Opens a session to the specified resource.
-Session open(Session resourceManagerSession, String resourceName, {int? mode, int? timeout}) {
+int open(int resourceManagerSession, String resourceName, {int? mode, int? timeout}) {
   Pointer<Utf8> name = resourceName.toNativeUtf8();
   Pointer<Uint32> vi = malloc<Uint32>(1);
 
-  int status = viOpen(resourceManagerSession.id, name, mode??VI_NULL, timeout??VI_NULL, vi);
+  int status = viOpen(resourceManagerSession, name, mode??VI_NULL, timeout??VI_NULL, vi);
 
   if(status == VI_SUCCESS_DEV_NPRESENT) {
     malloc.free(vi);
@@ -235,16 +235,90 @@ Session open(Session resourceManagerSession, String resourceName, {int? mode, in
     throw VI_ERROR_NPERMISSION_EXCEPTION;
   }
 
-  int id = vi.asTypedList(1).first;
+  int session = vi.asTypedList(1).first;
   malloc.free(vi);
-  return Session(id: id);
+  return session;
+}
+
+/// Closes the specified session, event, or find list.
+void close(int vi) {
+
+  int status = viClose(vi);
+
+  if(status == VI_WARN_NULL_OBJECT) {
+    throw VI_WARN_NULL_OBJECT_EXCEPTION;
+  } else if(status == VI_ERROR_INV_OBJECT) {
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if(status == VI_ERROR_CLOSING_FAILED) {
+    throw VI_ERROR_CLOSING_FAILED_EXCEPTION;
+  }
+
+}
+
+/// Sets the state of an attribute.
+void setAttribute(int vi, int attributeName, int attributeValue) {
+  int status = viSetAttribute(vi, attributeName, attributeValue);
+
+  if(status == VI_WARN_NSUP_ATTR_STATE) {
+    throw VI_WARN_NSUP_ATTR_STATE_EXCEPTION;
+  } else if (status == VI_ERROR_INV_OBJECT) {
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_NSUP_ATTR) {
+    throw VI_ERROR_NSUP_ATTR_EXCEPTION;
+  } else if (status == VI_ERROR_NSUP_ATTR_STATE) {
+    throw VI_ERROR_NSUP_ATTR_STATE_EXCEPTION;
+  } else if (status == VI_ERROR_ATTR_READONLY) {
+    throw VI_ERROR_ATTR_READONLY_EXCEPTION;
+  } else if (status == VI_ERROR_RSRC_LOCKED) {
+    throw VI_ERROR_RSRC_LOCKED_EXCEPTION;
+  }
+}
+
+/// Retrieves the state of an attribute.
+int getAttribute(int vi, int attributeName) {
+  Pointer<ViAttrState> attrState = malloc<ViAttrState>(1);
+  int status = viGetAttribute(vi, attributeName, attrState.cast<Void>());
+
+  if(status == VI_ERROR_INV_OBJECT) {
+    malloc.free(attrState);
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_NSUP_ATTR) {
+    malloc.free(attrState);
+    throw VI_ERROR_NSUP_ATTR_EXCEPTION;
+  }
+
+  int attributeState = attrState.asTypedList(1).first;
+  return attributeState;
+}
+
+/// Returns a user-readable description of the status code passed to the operation.
+String statusDesc(int vi, int statusCode) {
+  Pointer<Utf8> decs = malloc<Utf8>(MAX_STRING_LENGTH);
+  int status = viStatusDesc(vi, statusCode, decs);
+  if(status == VI_WARN_UNKNOWN_STATUS) {
+    throw VI_WARN_UNKNOWN_STATUS_EXCEPTION;
+  }
+  String description = decs.toDartString();
+  return description;
+}
+
+/// Requests a VISA session to terminate normal execution of an operation.
+void terminate(int vi, int degree, int jobId) {
+  int status = viTerminate(vi, degree, jobId);
+  if(status == VI_ERROR_INV_OBJECT) {
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_JOB_ID) {
+    throw VI_ERROR_INV_JOB_ID_EXCEPTION;
+  } else if (status == VI_ERROR_INV_DEGREE) {
+    throw VI_ERROR_INV_DEGREE_EXCEPTION;
+  }
 }
 
 /// Writes data to device or interface synchronously.
-ReturnCount write(Session session, String data) {
+int write(int vi, String data) {
   Pointer<Utf8> buf = data.toNativeUtf8();
   Pointer<Uint32> retCnt = malloc<Uint32>(1);
-  int status = viWrite(session.id, buf, buf.length, retCnt);
+  int status = viWrite(vi, buf, buf.length, retCnt);
 
   if(status == VI_ERROR_INV_OBJECT) {
     malloc.free(buf); malloc.free(retCnt);
@@ -288,14 +362,14 @@ ReturnCount write(Session session, String data) {
   }
 
   int returnCount= retCnt.asTypedList(1).first;
-  return ReturnCount(count: returnCount);
+  return returnCount;
 }
 
 /// Writes data to device or interface synchronously.
-ReturnData read(Session session) {
+String read(int session) {
   Pointer<Utf8> buf = malloc<Utf8>(MAX_STRING_LENGTH);
   Pointer<Uint32> retCnt = malloc<Uint32>(1);
-  int status = viRead(session.id, buf, buf.length, retCnt);
+  int status = viRead(session, buf, buf.length, retCnt);
 
   if(status == VI_SUCCESS_TERM_CHAR) {
     malloc.free(buf); malloc.free(retCnt);
@@ -357,22 +431,5 @@ ReturnData read(Session session) {
 
   String data = buf.toDartString(length: returnCount);
 
-  return ReturnData(data: data);
-}
-
-typedef ViCloseNative = ViStatus Function(ViObject vi);
-
-/// Closes the specified session, event, or find list.
-void close(Session session) {
-
-  int status = viClose(session.id);
-
-  if(status == VI_WARN_NULL_OBJECT) {
-    throw VI_WARN_NULL_OBJECT_EXCEPTION;
-  } else if(status == VI_ERROR_INV_OBJECT) {
-    throw VI_ERROR_INV_OBJECT_EXCEPTION;
-  } else if(status == VI_ERROR_CLOSING_FAILED) {
-    throw VI_ERROR_CLOSING_FAILED_EXCEPTION;
-  }
-
+  return data;
 }
