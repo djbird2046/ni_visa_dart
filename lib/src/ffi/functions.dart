@@ -11,7 +11,7 @@ final DynamicLibrary visaLib = Platform.isMacOS
 // Resource Manager Functions and Operations
 
 /// PURPOSE
-/// Queries a VISA system to locate the resources associated with a specified interface.
+/// This function returns a session to the Default Resource Manager resource.
 /// DESCRIPTION
 /// The viOpenDefaultRM() function must be called before any VISA operations can
 /// be invoked. The first call to this function initializes the VISA system, including the
@@ -362,6 +362,24 @@ typedef ViUnlockNative = ViStatus Function(ViSession vi);
 typedef ViUnlock = int Function(int vi);
 final ViUnlock viUnlock = visaLib.lookupFunction<ViUnlockNative, ViUnlock>('viUnlock');
 
+/// PURPOSE
+/// Enables notification of a specified event.
+/// DESCRIPTION
+/// The viEnableEvent() operation enables notification of an event identified by the
+/// eventType parameter for mechanisms specified in the mechanism parameter. The
+/// specified session can be enabled to queue events by specifying VI_QUEUE.
+/// Applications can enable the session to invoke a callback function to execute the
+/// handler by specifying VI_HNDLR. The applications are required to install at least one
+/// handler to be enabled for this mode. Specifying VI_SUSPEND_HNDLR enables the
+/// session to receive callbacks, but the invocation of the handler is deferred to a later
+/// time. Successive calls to this operation replace the old callback mechanism with the
+/// new callback mechanism.
+/// Specifying VI_ALL_ENABLED_EVENTS for the eventType parameter refers to all
+/// events which have previously been enabled on this session, making it easier to switch
+/// between the two callback mechanisms for multiple events.
+/// NI-VISA does not support enabling both the queue and the handler for the same event
+/// type on the same session. If you need to use both mechanisms for the same event
+/// type, you should open multiple sessions to the resource.
 typedef ViEnableEventNative = ViStatus Function(
     ViSession vi,
     ViEventType eventType,
@@ -376,6 +394,18 @@ typedef ViEnableEvent = int Function(
     );
 final ViEnableEvent viEnableEvent = visaLib.lookupFunction<ViEnableEventNative, ViEnableEvent>('viEnableEvent');
 
+/// PURPOSE
+/// Disables notification of the specified event type(s) via the specified mechanism(s).
+/// DESCRIPTION
+/// The viDisableEvent() operation disables servicing of an event identified by the
+/// eventType parameter for the mechanisms specified in the mechanism parameter.
+/// This operation prevents new event occurrences from being added to the queue(s).
+/// However, event occurrences already existing in the queue(s) are not flushed. Use viDiscardEvents()
+/// if you want to discard events remaining in the queue(s).
+/// Specifying VI_ALL_ENABLED_EVENTS for the eventType parameter allows a session
+/// to stop receiving all events. The session can stop receiving queued events by specifying VI_QUEUE.
+/// Applications can stop receiving callback events by specifying either VI_HNDLR or VI_SUSPEND_HNDLR.
+/// Specifying VI_ALL_MECH disables both the queuing and callback mechanisms.
 typedef ViDisableEventNative = ViStatus Function(
     ViSession vi,
     ViEventType eventType,
@@ -388,6 +418,16 @@ typedef ViDisableEvent = int Function(
     );
 final ViDisableEvent viDisableEvent = visaLib.lookupFunction<ViDisableEventNative, ViDisableEvent>('viDisableEvent');
 
+/// PURPOSE
+/// Discards event occurrences for specified event types and mechanisms in a session.
+/// DESCRIPTION
+/// The viDiscardEvents() operation discards all pending occurrences of the specified
+/// event types and mechanisms from the specified session. Specifying VI_ALL_ENABLED_EVENTS
+/// for the eventType parameter discards events of every type that is enabled for the given session.
+/// The information about all the event occurrences which have not yet been handled is discarded.
+/// This operation is useful to remove event occurrences that an application no longer needs.
+/// The discarded event occurrences are not available to a session at a later time.
+/// This operation does not apply to event contexts that have already been delivered to the application.
 typedef ViDiscardEventsNative = ViStatus Function(
     ViSession vi,
     ViEventType eventType,
@@ -400,6 +440,22 @@ typedef ViDiscardEvents = int Function(
     );
 final ViDiscardEvents viDiscardEvents = visaLib.lookupFunction<ViDiscardEventsNative, ViDiscardEvents>('viDiscardEvents');
 
+/// PURPOSE
+/// Waits for an occurrence of the specified event for a given session.
+/// DESCRIPTION
+/// The viWaitOnEvent() operation suspends the execution of a thread of an
+/// application and waits for an event of the type specified by inEventType for a time
+/// period specified by timeout. You can wait only for events that have been enabled with
+/// the viEnableEvent() operation. If the specified inEventType is VI_ALL_ENABLED_EVENTS,
+/// the operation waits for any event that is enabled for the given session.
+/// If the specified timeout value is VI_TMO_INFINITE, the operation is suspended indefinitely.
+/// If the specified timeout value is VI_TMO_IMMEDIATE, the operation is not suspended and can be
+/// used to dequeue events from an event queue.
+/// When the outContext handle returned from a successful invocation of viWaitOnEvent() is no longer
+/// needed, it should be passed to viClose().
+/// The outEventType and outContext parameters are optional and can be VI_NULL.
+/// This can be used if the event type is known from the inEventType parameter, or if the
+/// outContext handle is not needed to retrieve additional information.
 typedef ViWaitOnEventNative = ViStatus Function(
     ViSession vi,
     ViEventType inEventType,
@@ -416,6 +472,20 @@ typedef ViWaitOnEvent = int Function(
     );
 final ViWaitOnEvent viWaitOnEvent = visaLib.lookupFunction<ViWaitOnEventNative, ViWaitOnEvent>('viWaitOnEvent');
 
+/// PURPOSE
+/// Installs handlers for event callbacks.
+/// DESCRIPTION
+/// The viInstallHandler() operation allows applications to install handlers on
+/// sessions. The handler specified in the handler parameter is installed along with any
+/// previously installed handlers for the specified event. Applications can specify a value
+/// in the userHandle parameter that is passed to the handler on its invocation. VISA
+/// identifies handlers uniquely using the handler reference and this value.
+/// VISA allows applications to install multiple handlers for an eventType on the same
+/// session. You can install multiple handlers through multiple invocations of the viInstallHandler()
+/// operation, where each invocation adds to the previous list of handlers.
+/// If more than one handler is installed for an eventType, each of the handlers is invoked
+/// on every occurrence of the specified event(s). VISA specifies that the
+/// handlers are invoked in Last In First Out (LIFO) order.
 typedef ViInstallHandlerNative = ViStatus Function(
     ViSession vi,
     ViEventType eventType,
@@ -430,6 +500,20 @@ typedef ViInstallHandler = int Function(
     );
 final ViInstallHandler viInstallHandler = visaLib.lookupFunction<ViInstallHandlerNative, ViInstallHandler>('viInstallHandler');
 
+/// PURPOSE
+/// Uninstalls handlers for events.
+/// DESCRIPTION
+/// The viUninstallHandler() operation allows applications to uninstall handlers
+/// for events on sessions. Applications should also specify the value in the userHandle
+/// parameter that was passed while installing the handler. VISA identifies handlers
+/// uniquely using the handler reference and this value. All the handlers, for which the
+/// handler reference and the value matches, are uninstalled. Specifying VI_ANY_HNDLR
+/// as the value for the handler parameter causes the operation to uninstall all the
+/// handlers with the matching value in the userHandle parameter.
+/// Calling viUninstallHandler() removes the specified handler from the list of
+/// active handlers on the given session. If no handlers remain for the specified event type, the
+/// VISA driver disables that event type on the given session.
+/// It is not valid for a user to call this operation from within a callback, because this may cause a deadlock condition within the VISA driver.
 typedef ViUninstallHandlerNative = ViStatus Function(
     ViSession vi,
     ViEventType eventType,
@@ -446,6 +530,12 @@ final ViUninstallHandler viUninstallHandler = visaLib.lookupFunction<ViUninstall
 
 // Basic I/O Operations
 
+/// PURPOSE
+/// Reads data from device or interface synchronously.
+/// DESCRIPTION
+/// The viRead() operation synchronously transfers data. The data read is to be stored
+/// in the buffer represented by buf. This operation returns only when the transfer
+/// terminates. Only one synchronous read operation can occur at any one time.
 typedef ViReadNative = ViStatus Function(
     ViSession vi,
     ViBuf buf,

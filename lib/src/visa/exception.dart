@@ -8,7 +8,9 @@ final VISAException VI_SUCCESS_MAX_CNT_EXCEPTION = VISAException(code: VI_SUCCES
 final VISAException VI_WARN_EXT_FUNC_NIMPL_EXCEPTION = VISAException(code: VI_WARN_EXT_FUNC_NIMPL, identifier: "VI_WARN_EXT_FUNC_NIMPL", message: "The operation succeeded, but a lower level driver did not implement the extended functionality.");
 final VISAException VI_SUCCESS_NESTED_EXCLUSIVE_EXCEPTION = VISAException(code: VI_SUCCESS_NESTED_EXCLUSIVE, identifier: "VI_SUCCESS_NESTED_EXCLUSIVE", message: "Specified access mode is successfully acquired, and this session has nested exclusive locks.");
 final VISAException VI_SUCCESS_NESTED_SHARED_EXCEPTION = VISAException(code: VI_SUCCESS_NESTED_SHARED, identifier: "VI_SUCCESS_NESTED_SHARED", message: "Specified access mode is successfully acquired, and this session has nested shared locks.");
-
+final VISAException VI_SUCCESS_EVENT_EN_EXCEPTION = VISAException(code: VI_SUCCESS_EVENT_EN, identifier: "VI_SUCCESS_EVENT_EN", message: "Specified event is already enabled for at least one of the specified mechanisms.");
+final VISAException VI_SUCCESS_EVENT_DIS_EXCEPTION = VISAException(code: VI_SUCCESS_EVENT_DIS, identifier: "VI_SUCCESS_EVENT_DIS", message: "Specified event is already disabled for at least one of the specified mechanisms.");
+final VISAException VI_SUCCESS_QUEUE_EMPTY_EXCEPTION = VISAException(code: VI_SUCCESS_EVENT_DIS, identifier: "VI_SUCCESS_EVENT_DIS", message: "Operation completed successfully, but queue was already empty.");
 /// WARNING
 final VISAException VI_WARN_CONFIG_NLOADED_EXCEPTION = VISAException(code: VI_WARN_CONFIG_NLOADED, identifier: "VI_WARN_CONFIG_NLOADED", message: "At least one configured Passport module could not be loaded.");
 final VISAException VI_WARN_NULL_OBJECT_EXCEPTION = VISAException(code: VI_WARN_NULL_OBJECT, identifier: "VI_WARN_NULL_OBJECT", message: "The specified object reference is uninitialized. ");
@@ -51,3 +53,19 @@ final VISAException VI_ERROR_INV_DEGREE_EXCEPTION = VISAException(code: VI_ERROR
 final VISAException VI_ERROR_INV_LOCK_TYPE_EXCEPTION = VISAException(code: VI_ERROR_INV_LOCK_TYPE, identifier: "VI_ERROR_INV_LOCK_TYPE", message: "Specified lockType is not supported by this resource.");
 final VISAException VI_ERROR_INV_ACCESS_KEY_EXCEPTION = VISAException(code: VI_ERROR_INV_ACCESS_KEY, identifier: "VI_ERROR_INV_ACCESS_KEY", message: "The requestedKey value passed in is not a valid accessKey to the specified resource.");
 final VISAException VI_ERROR_WINDOW_NMAPPED_EXCEPTION = VISAException(code: VI_ERROR_WINDOW_NMAPPED, identifier: "VI_ERROR_WINDOW_NMAPPED", message: "The specified session is not currently mapped.");
+final VISAException VI_ERROR_INV_EVENT_EXCEPTION = VISAException(code: VI_ERROR_INV_EVENT, identifier: "VI_ERROR_INV_EVENT", message: "Specified eventType is not supported by the resource.");
+final VISAException VI_ERROR_INV_MECH_EXCEPTION = VISAException(code: VI_ERROR_INV_MECH, identifier: "VI_ERROR_INV_MECH", message: "Invalid mechanism specified for the event.");
+final VISAException VI_ERROR_INV_CONTEXT_EXCEPTION = VISAException(code: VI_ERROR_INV_CONTEXT, identifier: "VI_ERROR_INV_CONTEXT", message: "Specified event context is invalid.");
+final VISAException VI_ERROR_HNDLR_NINSTALLED_EXCEPTION = VISAException(code: VI_ERROR_HNDLR_NINSTALLED, identifier: "VI_ERROR_HNDLR_NINSTALLED", message: "A handler is not currently installed for the specified event. The session cannot be enabled for the VI_HNDLR mode of the callback mechanism.");
+final VISAException VI_ERROR_NSUP_MECH_EXCEPTION = VISAException(code: VI_ERROR_NSUP_MECH, identifier: "VI_ERROR_NSUP_MECH", message: "The specified mechanism is not supported for the given eventType.");
+final VISAException VI_ERROR_NENABLED_EXCEPTION = VISAException(code: VI_ERROR_NENABLED, identifier: "VI_ERROR_NENABLED", message: "The session must be enabled for events of the specified type in order to receive them.");
+final VISAException VI_ERROR_QUEUE_OVERFLOW_EXCEPTION = VISAException(code: VI_ERROR_NSUP_MECH, identifier: "VI_ERROR_NSUP_MECH", message: "No new event is raised because there is no room available on the queue. This means you have already received all previous events but not closed them. You must call viClose on each event you receive from viWaitOnEvent.");
+final VISAException VI_ERROR_INV_HNDLR_REF_EXCEPTION = VISAException(code: VI_ERROR_INV_HNDLR_REF, identifier: "VI_ERROR_INV_HNDLR_REF", message: "The given handler reference is invalid.");
+
+
+
+
+
+
+
+

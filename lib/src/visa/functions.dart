@@ -69,12 +69,6 @@ Resources findRsrc(int session, String expression) {
 
 
 /// Returns the next resource from the list of resources found during a previous call to findRsrc().
-///
-/// Parameters:
-/// - [findList] Describes a find list. This parameter must be created by findRsrc().
-///
-/// Returns:
-/// - [instrDesc] Returns a string identifying the location of a device. Strings can then be passed to viOpen() to establish a session to the given device.
 String findNext(int findList, String description) {
   ViPChar buf = malloc<Utf8>(MAX_STRING_LENGTH);
   int status = viFindNext(findList, buf);
@@ -314,13 +308,6 @@ void terminate(int vi, int degree, int jobId) {
   }
 }
 
-typedef ViLock = int Function(
-    int vi,
-    int lockType,
-    int timeout,
-    ViConstKeyId requestedKey,
-    Pointer<ViChar> accessKey,
-    );
 /// Establishes an access mode to the specified resources.
 String lock(int vi, int lockType, int timeout, String requestedKey) {
   Pointer<Utf8> reqKey = requestedKey.toNativeUtf8();
@@ -368,59 +355,150 @@ void unLock(int vi) {
   }
 }
 
-/// Writes data to device or interface synchronously.
-int write(int vi, String data) {
-  Pointer<Utf8> buf = data.toNativeUtf8();
-  Pointer<Uint32> retCnt = malloc<Uint32>(1);
-  int status = viWrite(vi, buf, buf.length, retCnt);
+/// Enables notification of a specified event.
+void enableEvent(int vi, int eventType, int mechanism, int context,) {
 
-  if(status == VI_ERROR_INV_OBJECT) {
-    malloc.free(buf); malloc.free(retCnt);
+  int status = viEnableEvent(vi, eventType, mechanism, context);
+
+  if(status == VI_SUCCESS_EVENT_EN) {
+    throw VI_SUCCESS_EVENT_EN_EXCEPTION;
+  } else if (status == VI_ERROR_INV_OBJECT) {
     throw VI_ERROR_INV_OBJECT_EXCEPTION;
-  } else if (status == VI_ERROR_NSUP_OPER) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_NSUP_OPER_EXCEPTION;
-  } else if (status == VI_ERROR_RSRC_LOCKED) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_RSRC_LOCKED_EXCEPTION;
-  } else if (status == VI_ERROR_TMO) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_TMO_EXCEPTION;
-  } else if (status == VI_ERROR_RAW_WR_PROT_VIOL) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_RAW_WR_PROT_VIOL_EXCEPTION;
-  } else if (status == VI_ERROR_RAW_RD_PROT_VIOL) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_RAW_RD_PROT_VIOL_EXCEPTION;
-  } else if (status == VI_ERROR_INP_PROT_VIOL) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_INP_PROT_VIOL_EXCEPTION;
-  } else if (status == VI_ERROR_BERR) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_BERR_EXCEPTION;
+  } else if (status == VI_ERROR_INV_EVENT) {
+    throw VI_ERROR_INV_EVENT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_MECH) {
+    throw VI_ERROR_INV_MECH_EXCEPTION;
+  } else if (status == VI_ERROR_INV_CONTEXT) {
+    throw VI_ERROR_INV_CONTEXT_EXCEPTION;
   } else if (status == VI_ERROR_INV_SETUP) {
-    malloc.free(buf); malloc.free(retCnt);
     throw VI_ERROR_INV_SETUP_EXCEPTION;
-  } else if (status == VI_ERROR_NCIC) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_NCIC_EXCEPTION;
-  } else if (status == VI_ERROR_NLISTENERS) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_NLISTENERS_EXCEPTION;
-  } else if (status == VI_ERROR_IO) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_IO_EXCEPTION;
-  } else if (status == VI_ERROR_CONN_LOST) {
-    malloc.free(buf); malloc.free(retCnt);
-    throw VI_ERROR_CONN_LOST_EXCEPTION;
+  } else if (status == VI_ERROR_HNDLR_NINSTALLED) {
+    throw VI_ERROR_HNDLR_NINSTALLED_EXCEPTION;
+  } else if (status == VI_ERROR_NSUP_MECH) {
+    throw VI_ERROR_NSUP_MECH_EXCEPTION;
   }
-
-  int returnCount= retCnt.asTypedList(1).first;
-  malloc.free(buf); malloc.free(retCnt);
-  return returnCount;
 }
 
-/// Writes data to device or interface synchronously.
+/// Disable event notifications for the given session.
+void disableEvent(int session, int eventType, int mechanism) {
+  int status = viDisableEvent(session, eventType, mechanism);
+
+  if (status == VI_SUCCESS_EVENT_DIS) {
+    throw VI_SUCCESS_EVENT_DIS_EXCEPTION;
+  } else if (status == VI_ERROR_INV_OBJECT) {
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_EVENT) {
+    throw VI_ERROR_INV_EVENT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_MECH) {
+    throw VI_ERROR_INV_MECH_EXCEPTION;
+  }
+}
+
+/// Discards event occurrences for specified event types and mechanisms in a session.
+void discardEvents(int session, int eventType, int mechanism) {
+  int status = viDiscardEvents(session, eventType, mechanism);
+
+  if (status == VI_SUCCESS_QUEUE_EMPTY) {
+    throw VI_SUCCESS_QUEUE_EMPTY_EXCEPTION;
+  } else if (status == VI_ERROR_INV_OBJECT) {
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_EVENT) {
+    throw VI_ERROR_INV_EVENT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_MECH) {
+    throw VI_ERROR_INV_MECH_EXCEPTION;
+  }
+}
+
+/// This function waits for a specified event and returns the event type and context.
+EventContext waitOnEvent(int vi, int eventType, int timeout) {
+  Pointer<ViEventType> outEventType = malloc<ViEventType>(1);
+  Pointer<ViEvent> outContext = malloc<ViEvent>(1);
+  int status = viWaitOnEvent(vi, eventType, timeout, outEventType, outContext);
+
+  if (status == VI_ERROR_INV_OBJECT) {
+    malloc.free(outEventType); malloc.free(outContext);
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_EVENT) {
+    malloc.free(outEventType); malloc.free(outContext);
+    throw VI_ERROR_INV_EVENT_EXCEPTION;
+  } else if (status == VI_ERROR_TMO) {
+    malloc.free(outEventType); malloc.free(outContext);
+    throw VI_ERROR_TMO_EXCEPTION;
+  } else if (status == VI_ERROR_NENABLED) {
+    malloc.free(outEventType); malloc.free(outContext);
+    throw VI_ERROR_NENABLED_EXCEPTION;
+  } else if (status == VI_ERROR_QUEUE_OVERFLOW) {
+    malloc.free(outEventType); malloc.free(outContext);
+    throw VI_ERROR_QUEUE_OVERFLOW_EXCEPTION;
+  }
+
+  int EventType = outEventType.asTypedList(1).first;
+  int receivedContext = outEventType.asTypedList(1).first;
+
+  EventContext eventContext = EventContext(
+    eventType: EventType,
+    context: receivedContext,
+  );
+
+  return eventContext;
+}
+
+typedef EventHandlerNative = ViStatus Function(
+    ViSession vi,
+    ViEventType eventType,
+    ViObject event,
+    ViAddr userHandle
+    );
+typedef EventHandler = int Function(
+    int vi,
+    int eventType,
+    int event,
+    int userHandle,
+    );
+
+/// Install a handler for an event callback.
+void installHandler(int session, int eventType, EventHandler handler, int userHandle) {
+  int handlr (int vi, int eventType, int event, Pointer<Void> userHandle,) {
+    return handler(vi, eventType, event, userHandle.address);
+  };
+
+  ViHndlr hndlr = Pointer.fromFunction<EventHandlerNative>(handlr, VI_ERROR_INV_HNDLR_REF);
+  Pointer<Void> userHandlePtr = Pointer.fromAddress(userHandle);
+  int status = viInstallHandler(session, eventType, hndlr, userHandlePtr);
+
+  if (status == VI_ERROR_INV_OBJECT) {
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_EVENT) {
+    throw VI_ERROR_INV_EVENT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_HNDLR_REF) {
+    throw VI_ERROR_INV_HNDLR_REF_EXCEPTION;
+  } else if (status == VI_ERROR_HNDLR_NINSTALLED) {
+    throw VI_ERROR_HNDLR_NINSTALLED_EXCEPTION;
+  }
+}
+
+/// Uninstalls a handler for a given event type.
+void uninstallHandler(int session, int eventType, EventHandler handler, int userHandle) {
+  int handlr (int vi, int eventType, int event, Pointer<Void> userHandle,) {
+    return handler(vi, eventType, event, userHandle.address);
+  };
+
+  ViHndlr hndlr = Pointer.fromFunction<EventHandlerNative>(handlr, VI_ERROR_INV_HNDLR_REF);
+  Pointer<Void> userHandlePtr = Pointer.fromAddress(userHandle);
+  int status = viUninstallHandler(session, eventType, hndlr, userHandlePtr);
+
+  if (status == VI_ERROR_INV_OBJECT) {
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_EVENT) {
+    throw VI_ERROR_INV_EVENT_EXCEPTION;
+  } else if (status == VI_ERROR_INV_HNDLR_REF) {
+    throw VI_ERROR_INV_HNDLR_REF_EXCEPTION;
+  } else if (status == VI_ERROR_HNDLR_NINSTALLED) {
+    throw VI_ERROR_HNDLR_NINSTALLED_EXCEPTION;
+  }
+}
+
+/// Reads data from device or interface synchronously.
 String read(int session) {
   Pointer<Utf8> buf = malloc<Utf8>(MAX_STRING_LENGTH);
   Pointer<Uint32> retCnt = malloc<Uint32>(1);
@@ -487,4 +565,56 @@ String read(int session) {
   malloc.free(buf); malloc.free(retCnt);
 
   return data;
+}
+
+/// Writes data to device or interface synchronously.
+int write(int vi, String data) {
+  Pointer<Utf8> buf = data.toNativeUtf8();
+  Pointer<Uint32> retCnt = malloc<Uint32>(1);
+  int status = viWrite(vi, buf, buf.length, retCnt);
+
+  if(status == VI_ERROR_INV_OBJECT) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_INV_OBJECT_EXCEPTION;
+  } else if (status == VI_ERROR_NSUP_OPER) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_NSUP_OPER_EXCEPTION;
+  } else if (status == VI_ERROR_RSRC_LOCKED) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_RSRC_LOCKED_EXCEPTION;
+  } else if (status == VI_ERROR_TMO) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_TMO_EXCEPTION;
+  } else if (status == VI_ERROR_RAW_WR_PROT_VIOL) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_RAW_WR_PROT_VIOL_EXCEPTION;
+  } else if (status == VI_ERROR_RAW_RD_PROT_VIOL) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_RAW_RD_PROT_VIOL_EXCEPTION;
+  } else if (status == VI_ERROR_INP_PROT_VIOL) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_INP_PROT_VIOL_EXCEPTION;
+  } else if (status == VI_ERROR_BERR) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_BERR_EXCEPTION;
+  } else if (status == VI_ERROR_INV_SETUP) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_INV_SETUP_EXCEPTION;
+  } else if (status == VI_ERROR_NCIC) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_NCIC_EXCEPTION;
+  } else if (status == VI_ERROR_NLISTENERS) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_NLISTENERS_EXCEPTION;
+  } else if (status == VI_ERROR_IO) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_IO_EXCEPTION;
+  } else if (status == VI_ERROR_CONN_LOST) {
+    malloc.free(buf); malloc.free(retCnt);
+    throw VI_ERROR_CONN_LOST_EXCEPTION;
+  }
+
+  int returnCount= retCnt.asTypedList(1).first;
+  malloc.free(buf); malloc.free(retCnt);
+  return returnCount;
 }

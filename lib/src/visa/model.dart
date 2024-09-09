@@ -12,27 +12,12 @@ class VISAException implements Exception {
   }
 }
 
-// class Session {
-//   int id;
-//   Session({required this.id});
-// }
-
 class Resources {
   List<int> viList;
   String description;
 
   Resources({required this.viList, required this.description});
 }
-
-// class ReturnCount {
-//   int count;
-//   ReturnCount({required this.count});
-// }
-
-// class ReturnData {
-//   String data;
-//   ReturnData({required this.data});
-// }
 
 class Interface {
   int type;
@@ -45,4 +30,11 @@ class ExpandedInterface extends Interface {
   String expandedUnaliasedName;
   String aliasIfExists;
   ExpandedInterface({required super.type, required super.number, required this.resourceClass, required this.expandedUnaliasedName, required this.aliasIfExists});
+}
+
+class EventContext {
+  int eventType;
+  int context;
+
+  EventContext({required this.eventType, required this.context});
 }
