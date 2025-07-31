@@ -1,3 +1,7 @@
+## 0.3.0
+
+- tiny issues
+
 ## 0.2.0
 
 - visa ffigen included

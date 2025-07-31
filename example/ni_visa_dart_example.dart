@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:ni_visa_dart/ni_visa.dart';
+import 'package:ni_visa_dart/ni_visa_dart.dart';
 
 void main() {
   try {

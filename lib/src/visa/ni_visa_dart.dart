@@ -18,7 +18,7 @@ class NIVisaDart {
     visa = NIVisaFFI(DynamicLibrary.open(dynamicLibrary.path));
   }
 
-  T call<T>({required int Function() onCall, required T Function(VISAStatus) onResult, required void Function() onFree,}) {
+  T _call<T>({required int Function() onCall, required T Function(VISAStatus) onResult, required void Function() onFree,}) {
     int status = onCall();
     VISAStatus visaStatus = getVISAStatus(status);
     if(visaStatus is VISAError) {
@@ -30,7 +30,7 @@ class NIVisaDart {
     return result;
   }
 
-  T callVoid<T>({required void Function() onCall, required T Function() onResult, required void Function() onFree,}) {
+  T _callVoid<T>({required void Function() onCall, required T Function() onResult, required void Function() onFree,}) {
     onCall();
     T result = onResult();
     onFree();
@@ -41,7 +41,7 @@ class NIVisaDart {
   Session viOpenDefaultRM() {
     ViPSession vi = malloc<UnsignedInt>(1);
 
-    return call<Session>(
+    return _call<Session>(
       onCall: () {
         return visa.viOpenDefaultRM(vi);
       },
@@ -66,7 +66,7 @@ class NIVisaDart {
     ViPUInt32 retCnt =  malloc<UnsignedInt>(1);
     Pointer<ViChar> desc = malloc<Char>(MAX_STRING_LENGTH);
 
-    return call<Resources>(
+    return _call<Resources>(
       onCall: () {
         return visa.viFindRsrc(sesn, expr, vi, retCnt, desc);
       },
@@ -88,7 +88,7 @@ class NIVisaDart {
     ///OUT
     Pointer<ViChar> instrDesc = malloc<ViChar>(MAX_STRING_LENGTH);
 
-    return call<InstrumentDescriptor>(
+    return _call<InstrumentDescriptor>(
       onCall: () {
         return visa.viFindNext(findList, instrDesc);
       },
@@ -113,7 +113,7 @@ class NIVisaDart {
     ViPUInt16 intfType = malloc<UnsignedShort>(1);
     ViPUInt16 intfNum = malloc<UnsignedShort>(1);
 
-    return call<Interface>(
+    return _call<Interface>(
       onCall: () {
         return visa.viParseRsrc(rmSesn, rsrcName, intfType, intfNum);
       },
@@ -142,7 +142,7 @@ class NIVisaDart {
     Pointer<ViChar> expUnaliasedName = malloc<ViChar>(MAX_STRING_LENGTH);
     Pointer<ViChar> aliasIfExs = malloc<ViChar>(MAX_STRING_LENGTH);
 
-    return call<ExpandedInterface>(
+    return _call<ExpandedInterface>(
       onCall: () {
         return visa.viParseRsrcEx(rmSesn, rsrcName, intfType, intfNum, rsrcClass, expUnaliasedName, aliasIfExs);
       },
@@ -172,7 +172,7 @@ class NIVisaDart {
     ///OUT
     ViPSession vi = malloc<UnsignedInt>(1);
 
-    return call<Session>(
+    return _call<Session>(
       onCall: () {
         return visa.viOpen(sesn, name, _mode, _timeout, vi);
       },
@@ -192,7 +192,7 @@ class NIVisaDart {
 
     ///OUT
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viClose(vi);
       },
@@ -210,7 +210,7 @@ class NIVisaDart {
     int attrName = attributeName;
     int attrValue = attributeValue;
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viSetAttribute(vi, attrName, attrValue);
       },
@@ -230,7 +230,7 @@ class NIVisaDart {
     ///OUT
     Pointer<Void> attrState = malloc<UnsignedInt>(8).cast<Void>();
 
-    return call<AttributeState>(
+    return _call<AttributeState>(
       onCall: () {
         return visa.viGetAttribute(vi, attrName, attrState);
       },
@@ -250,7 +250,7 @@ class NIVisaDart {
     ///OUT
     Pointer<ViChar> desc = malloc<Char>(MAX_STRING_LENGTH);
 
-    return call<StatusDescription>(
+    return _call<StatusDescription>(
       onCall: () {
         return visa.viStatusDesc(vi, status, desc);
       },
@@ -266,7 +266,7 @@ class NIVisaDart {
 
   /// Requests a VISA session to terminate normal execution of an operation.
   Status viTerminate(int vi, int degree, int jobId) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viTerminate(vi, degree, jobId);
       },
@@ -286,7 +286,7 @@ class NIVisaDart {
     ///OUT
     Pointer<ViChar> accessKey = malloc<ViChar>(MAX_STRING_LENGTH);
 
-    return call<AccessKey>(
+    return _call<AccessKey>(
       onCall: () {
         return visa.viLock(vi, lockType, timeout, _requestedKey, accessKey);
       },
@@ -302,7 +302,7 @@ class NIVisaDart {
 
   /// Relinquishes a lock for the specified resource.
   Status viUnlock(int vi) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viUnlock(vi);
       },
@@ -315,8 +315,8 @@ class NIVisaDart {
   }
 
   /// Enables notification of a specified event.
-  Status viEnableEvent(int vi, int eventType, int mechanism, int context,) {
-    return call<Status>(
+  Status viEnableEvent(int vi, int eventType, int mechanism, int context) {
+    return _call<Status>(
       onCall: () {
         return visa.viEnableEvent(vi, eventType, mechanism, context);
       },
@@ -330,7 +330,7 @@ class NIVisaDart {
 
   /// Disable event notifications for the given session.
   Status viDisableEvent(int vi, int eventType, int mechanism) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viDisableEvent(vi, eventType, mechanism);
       },
@@ -344,7 +344,7 @@ class NIVisaDart {
 
   /// Discards event occurrences for specified event types and mechanisms in a session.
   Status viDiscardEvents(int vi, int eventType, int mechanism) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viDiscardEvents(vi, eventType, mechanism);
       },
@@ -362,7 +362,7 @@ class NIVisaDart {
     ViPEventType outEventType = malloc<UnsignedInt>(1);
     ViPEvent outContext = malloc<UnsignedInt>(1);
 
-    return call<EventContext>(
+    return _call<EventContext>(
       onCall: () {
         return visa.viWaitOnEvent(vi, eventType, timeout, outEventType, outContext);
       },
@@ -390,7 +390,7 @@ class NIVisaDart {
     Pointer<NativeFunction<ViStatus Function(ViSession, ViEventType, ViEvent, ViAddr)>> __handler = Pointer.fromFunction(_eventHandler, 0);
     ViAddr _userHandle = Pointer.fromAddress(userHandle);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viInstallHandler(vi, eventType, __handler, _userHandle);
       },
@@ -409,7 +409,7 @@ class NIVisaDart {
     Pointer<NativeFunction<ViStatus Function(ViSession, ViEventType, ViEvent, ViAddr)>> __handler = Pointer.fromFunction(_eventHandler, 0);
     ViAddr _userHandle = Pointer.fromAddress(userHandle);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viUninstallHandler(vi, eventType, __handler, _userHandle);
       },
@@ -430,7 +430,7 @@ class NIVisaDart {
     Pointer<UnsignedChar> buf = malloc<UnsignedChar>(MAX_STRING_LENGTH);
     Pointer<UnsignedInt> retCnt = malloc<UnsignedInt>(1);
 
-    return call<Data>(
+    return _call<Data>(
       onCall: () {
         return visa.viRead(session, buf, cnt, retCnt);
       },
@@ -454,7 +454,7 @@ class NIVisaDart {
     Pointer<UnsignedChar> buf = malloc<UnsignedChar>(MAX_STRING_LENGTH);
     ViPJobId jobId = malloc<UnsignedInt>(1);
 
-    return call<Data>(
+    return _call<Data>(
       onCall: () {
         return visa.viReadAsync(session, buf, cnt, jobId);
       },
@@ -478,7 +478,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt32 retCnt = malloc<UnsignedInt>(1);
 
-    return call<ReturnCount>(
+    return _call<ReturnCount>(
       onCall: () {
         return visa.viReadToFile(vi, _filename, cnt, retCnt);
       },
@@ -502,7 +502,7 @@ class NIVisaDart {
     ///OUT
     Pointer<UnsignedInt> retCnt = malloc<UnsignedInt>(1);
 
-    return call<ReturnCount>(
+    return _call<ReturnCount>(
       onCall: () {
         return visa.viWrite(vi, buf, cnt, retCnt);
       },
@@ -526,7 +526,7 @@ class NIVisaDart {
     ///OUT
     Pointer<UnsignedInt> retCnt = malloc<UnsignedInt>(1);
 
-    return call<ReturnCount>(
+    return _call<ReturnCount>(
       onCall: () {
         return visa.viWriteAsync(vi, buf, cnt, retCnt);
       },
@@ -549,7 +549,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt32 retCnt = malloc<UnsignedInt>(1);
 
-    return call<ReturnCount>(
+    return _call<ReturnCount>(
       onCall: () {
         return visa.viWriteFromFile(vi, _filename, cnt, retCnt);
       },
@@ -565,7 +565,7 @@ class NIVisaDart {
 
   /// Asserts software or hardware trigger.
   Status viAssertTrigger(int vi, int protocol) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viAssertTrigger(vi, protocol);
       },
@@ -582,7 +582,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt16 status = malloc<UnsignedShort>(1);
 
-    return call<ServiceStatus>(
+    return _call<ServiceStatus>(
       onCall: () {
         return visa.viReadSTB(vi, status);
       },
@@ -598,7 +598,7 @@ class NIVisaDart {
 
   /// Clears a device.
   Status viClear(int vi) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viClear(vi);
       },
@@ -612,7 +612,7 @@ class NIVisaDart {
 
   /// Sets the size for the formatted I/O and/or low-level I/O communication buffer(s).
   Status viSetBuf(int vi, int mask, int size) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viSetBuf(vi, mask, size);
       },
@@ -626,7 +626,7 @@ class NIVisaDart {
 
   /// Manually flushes the specified buffers associated with formatted I/O operations and/or serial communication.
   Status viFlush(int vi, int mask) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viFlush(vi, mask);
       },
@@ -650,7 +650,7 @@ class NIVisaDart {
     ///OUT
     Pointer<UnsignedInt> retCnt = malloc<UnsignedInt>(1);
 
-    return call<ReturnCount>(
+    return _call<ReturnCount>(
       onCall: () {
         return visa.viBufWrite(vi, buf, cnt, retCnt);
       },
@@ -673,7 +673,7 @@ class NIVisaDart {
     Pointer<UnsignedChar> buf = malloc<UnsignedChar>(MAX_STRING_LENGTH);
     Pointer<UnsignedInt> retCnt = malloc<UnsignedInt>(1);
 
-    return call<Data>(
+    return _call<Data>(
       onCall: () {
         return visa.viBufRead(session, buf, cnt, retCnt);
       },
@@ -693,7 +693,7 @@ class NIVisaDart {
     /// IN
     ViConstString _writeFmt = writeFmt.toPointerCharMalloc();
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viPrintf(vi, _writeFmt);
       },
@@ -712,7 +712,7 @@ class NIVisaDart {
     ViConstString _writeFmt = writeFmt.toPointerCharMalloc();
     ViVAList _params = params.toPointerCharMalloc();
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viVPrintf(vi, _writeFmt, _params);
       },
@@ -733,7 +733,7 @@ class NIVisaDart {
     ///OUT
     Pointer<UnsignedChar> buf = malloc<UnsignedChar>(MAX_STRING_LENGTH);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viSPrintf(vi, buf, _writeFmt);
       },
@@ -755,7 +755,7 @@ class NIVisaDart {
     ///OUT
     Pointer<UnsignedChar> buf = malloc<UnsignedChar>(MAX_STRING_LENGTH);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viVSPrintf(vi, buf, _writeFmt, _params);
       },
@@ -773,7 +773,7 @@ class NIVisaDart {
     /// IN
     ViConstString _writeFmt = writeFmt.toPointerCharMalloc();
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viScanf(vi, _writeFmt);
       },
@@ -792,7 +792,7 @@ class NIVisaDart {
     ViConstString _writeFmt = writeFmt.toPointerCharMalloc();
     ViVAList _params = params.toPointerCharMalloc();
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viVScanf(vi, _writeFmt, _params);
       },
@@ -813,7 +813,7 @@ class NIVisaDart {
     ///OUT
     Pointer<UnsignedChar> buf = malloc<UnsignedChar>(MAX_STRING_LENGTH);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viSScanf(vi, buf, _writeFmt);
       },
@@ -835,7 +835,7 @@ class NIVisaDart {
     ///OUT
     Pointer<UnsignedChar> buf = malloc<UnsignedChar>(MAX_STRING_LENGTH);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viVSScanf(vi, buf, _writeFmt, _params);
       },
@@ -854,7 +854,7 @@ class NIVisaDart {
     ViConstString _writeFmt = writeFmt.toPointerCharMalloc();
     ViConstString _readFmt = writeFmt.toPointerCharMalloc();
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viQueryf(vi, _writeFmt, _readFmt);
       },
@@ -874,7 +874,7 @@ class NIVisaDart {
     ViConstString _readFmt = writeFmt.toPointerCharMalloc();
     ViVAList _params = params.toPointerCharMalloc();
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viVQueryf(vi, _writeFmt, _readFmt, _params);
       },
@@ -892,7 +892,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt8 val8 = malloc<UnsignedChar>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viIn8(vi, space, offset, val8);
       },
@@ -908,7 +908,7 @@ class NIVisaDart {
 
   /// Writes an 8-bit value to the specified memory space and offset.
   Status viOut8(int vi, int space, int offset, int val8) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viOut8(vi, space, offset, val8);
       },
@@ -925,7 +925,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt16 val16 = malloc<UnsignedShort>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viIn16(vi, space, offset, val16);
       },
@@ -941,7 +941,7 @@ class NIVisaDart {
 
   /// Writes an 16-bit value to the specified memory space and offset.
   Status viOut16(int vi, int space, int offset, int val16) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viOut16(vi, space, offset, val16);
       },
@@ -958,7 +958,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt32 val32 = malloc<UnsignedInt>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viIn32(vi, space, offset, val32);
       },
@@ -974,7 +974,7 @@ class NIVisaDart {
 
   /// Writes an 32-bit value to the specified memory space and offset.
   Status viOut32(int vi, int space, int offset, int val32) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viOut32(vi, space, offset, val32);
       },
@@ -991,7 +991,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt64 val64 = malloc<UnsignedLongLong>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viIn64(vi, space, offset, val64);
       },
@@ -1007,7 +1007,7 @@ class NIVisaDart {
 
   /// Writes an 64-bit value to the specified memory space and offset.
   Status viOut64(int vi, int space, int offset, int val64) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viOut64(vi, space, offset, val64);
       },
@@ -1024,7 +1024,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt8 val8 = malloc<UnsignedChar>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viIn8Ex(vi, space, offset, val8);
       },
@@ -1040,7 +1040,7 @@ class NIVisaDart {
 
   /// Writes an 8-bit value to the specified memory space and offset.
   Status viOut8Ex(int vi, int space, int offset, int val8) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viOut8Ex(vi, space, offset, val8);
       },
@@ -1057,7 +1057,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt16 val16 = malloc<UnsignedShort>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viIn16Ex(vi, space, offset, val16);
       },
@@ -1073,7 +1073,7 @@ class NIVisaDart {
 
   /// Writes an 16-bit value to the specified memory space and offset.
   Status viOut16Ex(int vi, int space, int offset, int val16) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viOut16Ex(vi, space, offset, val16);
       },
@@ -1090,7 +1090,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt32 val32 = malloc<UnsignedInt>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viIn32Ex(vi, space, offset, val32);
       },
@@ -1106,7 +1106,7 @@ class NIVisaDart {
 
   /// Writes an 32-bit value to the specified memory space and offset.
   Status viOut32Ex(int vi, int space, int offset, int val32) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viOut32Ex(vi, space, offset, val32);
       },
@@ -1123,7 +1123,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt64 val64 = malloc<UnsignedLongLong>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viIn64Ex(vi, space, offset, val64);
       },
@@ -1139,7 +1139,7 @@ class NIVisaDart {
 
   /// Writes an 64-bit value to the specified memory space and offset.
   Status viOut64Ex(int vi, int space, int offset, int val64) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viOut64Ex(vi, space, offset, val64);
       },
@@ -1156,7 +1156,7 @@ class NIVisaDart {
     ///OUT
     ViAUInt8 buf8 = malloc<UnsignedChar>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viMoveIn8(vi, space, offset, length, buf8);
       },
@@ -1176,7 +1176,7 @@ class NIVisaDart {
     ViAUInt8 _buf8 = malloc<UnsignedChar>(1);
     _buf8.value = buf8.toUnsigned(8);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveOut8(vi, space, offset, length, _buf8);
       },
@@ -1194,7 +1194,7 @@ class NIVisaDart {
     ///OUT
     ViAUInt16 buf16 = malloc<UnsignedShort>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viMoveIn16(vi, space, offset, length, buf16);
       },
@@ -1214,7 +1214,7 @@ class NIVisaDart {
     ViAUInt16 _buf16 = malloc<UnsignedShort>(1);
     _buf16.value = buf16.toUnsigned(16);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveOut16(vi, space, offset, length, _buf16);
       },
@@ -1231,7 +1231,7 @@ class NIVisaDart {
     ///OUT
     ViAUInt32 buf32 = malloc<UnsignedInt>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viMoveIn32(vi, space, offset, length, buf32);
       },
@@ -1251,7 +1251,7 @@ class NIVisaDart {
     ViAUInt32 _buf32 = malloc<UnsignedInt>(1);
     _buf32.value = buf32.toUnsigned(32);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveOut32(vi, space, offset, length, _buf32);
       },
@@ -1268,7 +1268,7 @@ class NIVisaDart {
     ///OUT
     ViAUInt64 buf64 = malloc<UnsignedLongLong>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viMoveIn64(vi, space, offset, length, buf64);
       },
@@ -1288,7 +1288,7 @@ class NIVisaDart {
     ViAUInt64 _buf64 = malloc<UnsignedLongLong>(1);
     _buf64.value = buf64.toUnsigned(64);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveOut64(vi, space, offset, length, _buf64);
       },
@@ -1305,7 +1305,7 @@ class NIVisaDart {
     ///OUT
     ViAUInt8 buf8 = malloc<UnsignedChar>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viMoveIn8Ex(vi, space, offset, length, buf8);
       },
@@ -1325,7 +1325,7 @@ class NIVisaDart {
     ViAUInt8 _buf8 = malloc<UnsignedChar>(1);
     _buf8.value = buf8.toUnsigned(8);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveOut8Ex(vi, space, offset, length, _buf8);
       },
@@ -1343,7 +1343,7 @@ class NIVisaDart {
     ///OUT
     ViAUInt16 buf16 = malloc<UnsignedShort>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viMoveIn16Ex(vi, space, offset, length, buf16);
       },
@@ -1363,7 +1363,7 @@ class NIVisaDart {
     ViAUInt16 _buf16 = malloc<UnsignedShort>(1);
     _buf16.value = buf16.toUnsigned(16);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveOut16Ex(vi, space, offset, length, _buf16);
       },
@@ -1381,7 +1381,7 @@ class NIVisaDart {
     ///OUT
     ViAUInt32 buf32 = malloc<UnsignedInt>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viMoveIn32Ex(vi, space, offset, length, buf32);
       },
@@ -1401,7 +1401,7 @@ class NIVisaDart {
     ViAUInt32 _buf32 = malloc<UnsignedInt>(1);
     _buf32.value = buf32.toUnsigned(32);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveOut32Ex(vi, space, offset, length, _buf32);
       },
@@ -1419,7 +1419,7 @@ class NIVisaDart {
     ///OUT
     ViAUInt64 buf64 = malloc<UnsignedLongLong>(1);
 
-    return call<IntVal>(
+    return _call<IntVal>(
       onCall: () {
         return visa.viMoveIn64Ex(vi, space, offset, length, buf64);
       },
@@ -1439,7 +1439,7 @@ class NIVisaDart {
     ViAUInt64 _buf64 = malloc<UnsignedLongLong>(1);
     _buf64.value = buf64.toUnsigned(64);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveOut64Ex(vi, space, offset, length, _buf64);
       },
@@ -1454,7 +1454,7 @@ class NIVisaDart {
 
   /// Moves a block of data.
   Status viMove(int vi, int srcSpace, int srcOffset, int srcWidth, int destSpace, int destOffset, int destWidth, int srcLength) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMove(vi, srcSpace, srcOffset, srcWidth, destSpace, destOffset, destWidth, srcLength);
       },
@@ -1468,7 +1468,7 @@ class NIVisaDart {
 
   /// Moves a block of data.
   Status viMoveEx(int vi, int srcSpace, int srcOffset, int srcWidth, int destSpace, int destOffset, int destWidth, int srcLength) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMoveEx(vi, srcSpace, srcOffset, srcWidth, destSpace, destOffset, destWidth, srcLength);
       },
@@ -1485,7 +1485,7 @@ class NIVisaDart {
     ///OUT
     ViPJobId jobId = malloc<UnsignedInt>(1);
 
-    return call<JobId>(
+    return _call<JobId>(
       onCall: () {
         return visa.viMoveAsync(vi, srcSpace, srcOffset, srcWidth, destSpace, destOffset, destWidth, srcLength, jobId);
       },
@@ -1504,7 +1504,7 @@ class NIVisaDart {
     ///OUT
     ViPJobId jobId = malloc<UnsignedInt>(1);
 
-    return call<JobId>(
+    return _call<JobId>(
       onCall: () {
         return visa.viMoveAsyncEx(vi, srcSpace, srcOffset, srcWidth, destSpace, destOffset, destWidth, srcLength, jobId);
       },
@@ -1528,7 +1528,7 @@ class NIVisaDart {
     ///OUT
     ViPAddr address = malloc<Pointer<Void>>(1);
 
-    return call<Address>(
+    return _call<Address>(
       onCall: () {
         return visa.viMapAddress(vi, mapSpace, mapOffset, mapSize, access, _suggested, address);
       },
@@ -1544,7 +1544,7 @@ class NIVisaDart {
 
   /// Unmaps memory space previously mapped by viMapAddress().
   Status viUnmapAddress(int vi) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viUnmapAddress(vi);
       },
@@ -1566,7 +1566,7 @@ class NIVisaDart {
     ///OUT
     ViPAddr address = malloc<Pointer<Void>>(1);
 
-    return call<Address>(
+    return _call<Address>(
       onCall: () {
         return visa.viMapAddressEx(vi, mapSpace, mapOffset, mapSize, access, _suggested, address);
       },
@@ -1588,7 +1588,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt8 val8 = malloc<UnsignedChar>(1);
 
-    return callVoid<IntValue>(
+    return _callVoid<IntValue>(
       onCall: () {
         visa.viPeek8(vi, _address, val8);
       },
@@ -1607,7 +1607,7 @@ class NIVisaDart {
     /// IN
     ViAddr _address = Pointer.fromAddress(address);
 
-    callVoid<void>(
+    _callVoid<void>(
       onCall: () {
         visa.viPoke8(vi, _address, val8);
       },
@@ -1627,7 +1627,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt16 val16 = malloc<UnsignedShort>(1);
 
-    return callVoid<IntValue>(
+    return _callVoid<IntValue>(
       onCall: () {
         visa.viPeek16(vi, _address, val16);
       },
@@ -1646,7 +1646,7 @@ class NIVisaDart {
     /// IN
     ViAddr _address = Pointer.fromAddress(address);
 
-    callVoid<void>(
+    _callVoid<void>(
       onCall: () {
         visa.viPoke16(vi, _address, val16);
       },
@@ -1666,7 +1666,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt32 val32 = malloc<UnsignedInt>(1);
 
-    return callVoid<IntValue>(
+    return _callVoid<IntValue>(
       onCall: () {
         visa.viPeek32(vi, _address, val32);
       },
@@ -1685,7 +1685,7 @@ class NIVisaDart {
     /// IN
     ViAddr _address = Pointer.fromAddress(address);
 
-    callVoid<void>(
+    _callVoid<void>(
       onCall: () {
         visa.viPoke32(vi, _address, val32);
       },
@@ -1705,7 +1705,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt64 val64 = malloc<UnsignedLongLong>(1);
 
-    return callVoid<IntValue>(
+    return _callVoid<IntValue>(
       onCall: () {
         visa.viPeek64(vi, _address, val64);
       },
@@ -1724,7 +1724,7 @@ class NIVisaDart {
     /// IN
     ViAddr _address = Pointer.fromAddress(address);
 
-    callVoid<void>(
+    _callVoid<void>(
       onCall: () {
         visa.viPoke64(vi, _address, val64);
       },
@@ -1741,7 +1741,7 @@ class NIVisaDart {
     ///OUT
     ViPBusAddress offset = malloc<UnsignedLongLong>(1);
 
-    return call<Offset>(
+    return _call<Offset>(
       onCall: () {
         return visa.viMemAlloc(vi, size, offset);
       },
@@ -1757,7 +1757,7 @@ class NIVisaDart {
 
   /// Frees memory previously allocated using the viMemAlloc() operation.
   Status viMemFree(int vi, int offset) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMemFree(vi, offset);
       },
@@ -1774,7 +1774,7 @@ class NIVisaDart {
     ///OUT
     ViPBusAddress offset = malloc<UnsignedLongLong>(1);
 
-    return call<Offset>(
+    return _call<Offset>(
       onCall: () {
         return visa.viMemAllocEx(vi, size, offset);
       },
@@ -1790,7 +1790,7 @@ class NIVisaDart {
 
   /// Frees memory previously allocated using the viMemAlloc() operation.
   Status viMemFreeEx(int vi, int offset) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMemFreeEx(vi, offset);
       },
@@ -1804,7 +1804,7 @@ class NIVisaDart {
 
   /// Controls the state of the GPIB Remote Enable (REN) interface line, and optionally the remote/local state of the device.
   Status viGpibControlREN(int vi, int mode) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viGpibControlREN(vi, mode);
       },
@@ -1818,7 +1818,7 @@ class NIVisaDart {
 
   /// Specifies the state of the ATN line and the local active controller state.
   Status viGpibControlATN(int vi, int mode) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viGpibControlATN(vi, mode);
       },
@@ -1832,7 +1832,7 @@ class NIVisaDart {
 
   /// Pulse the interface clear line (IFC) for at least 100 microseconds.
   Status viGpibSendIFC(int vi) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viGpibSendIFC(vi);
       },
@@ -1852,7 +1852,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt32 retCnt = malloc<UnsignedInt>(1);
 
-    return call<ReturnCount>(
+    return _call<ReturnCount>(
       onCall: () {
         return visa.viGpibCommand(vi, _cmd, cnt, retCnt);
       },
@@ -1868,7 +1868,7 @@ class NIVisaDart {
 
   /// Tell the GPIB device at the specified address to become controller in charge (CIC).
   Status viGpibPassControl(int vi, int primAddr, int secAddr) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viGpibPassControl(vi, primAddr, secAddr);
       },
@@ -1885,7 +1885,7 @@ class NIVisaDart {
     ///OUT
     ViPUInt32 response = malloc<UnsignedInt>(1);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viVxiCommandQuery(vi, mode, cmd, response);
       },
@@ -1901,7 +1901,7 @@ class NIVisaDart {
 
   /// Asserts or deasserts the specified utility bus signal.
   Status viAssertUtilSignal(int vi, int line) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viAssertUtilSignal(vi, line);
       },
@@ -1915,7 +1915,7 @@ class NIVisaDart {
 
   /// Asserts the specified interrupt or signal.
   Status viAssertIntrSignal(int vi, int mode, int statusID) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viAssertIntrSignal(vi, mode, statusID);
       },
@@ -1929,7 +1929,7 @@ class NIVisaDart {
 
   /// Map the specified trigger source line to the specified destination line.
   Status viMapTrigger(int vi, int trigSrc, int trigDest, int mode) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viMapTrigger(vi, trigSrc, trigDest, mode);
       },
@@ -1943,7 +1943,7 @@ class NIVisaDart {
 
   /// Undo a previous map from the specified trigger source line to the specified destination line.
   Status viUnmapTrigger(int vi, int trigSrc, int trigDest) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viUnmapTrigger(vi, trigSrc, trigDest);
       },
@@ -1960,7 +1960,7 @@ class NIVisaDart {
     /// IN
     ViConstBuf _buf = malloc<UnsignedChar>(buf.length);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viUsbControlOut(vi, bmRequestType, bRequest, wValue, wIndex, wLength, _buf);
       },
@@ -1979,7 +1979,7 @@ class NIVisaDart {
     ViPBuf buf = malloc<UnsignedChar>(MAX_STRING_LENGTH);
     ViPUInt16 retCnt = malloc<UnsignedShort>(1);
 
-    return call<Buffer>(
+    return _call<Buffer>(
       onCall: () {
         return visa.viUsbControlIn(vi, bmRequestType, bRequest, wValue, wIndex, wLength, buf, retCnt);
       },
@@ -2005,7 +2005,7 @@ class NIVisaDart {
     ///OUT
     ViPInt16 failureIndex = malloc<Short>(1);
 
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viPxiReserveTriggers(vi, cnt, _trigBuses, _trigLines, failureIndex);
       },
@@ -2021,7 +2021,7 @@ class NIVisaDart {
 
   /// mode values include VI_VXI_RESP16, VI_VXI_RESP32, and the next 2 values
   Status viVxiServantResponse(int vi, int mode, int resp) {
-    return call<Status>(
+    return _call<Status>(
       onCall: () {
         return visa.viVxiServantResponse(vi, mode, resp);
       },

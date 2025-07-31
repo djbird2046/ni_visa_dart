@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-import 'package:ni_visa_dart/ni_visa.dart';
+import 'package:ni_visa_dart/ni_visa_dart.dart';
 
 void main() {
   NIVisaFFI niVisaFFI = NIVisaFFI(DynamicLibrary.open("dynamic_libs/macos/VISA.framework/VISA"));
@@ -12,4 +12,3 @@ void main() {
 
   print("status: $status" + ", session: $session");
 }
-

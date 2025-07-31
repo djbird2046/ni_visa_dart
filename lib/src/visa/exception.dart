@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../ffi/ni_visa_ffi.dart';
 
 class VISAStatus implements Exception {
@@ -25,6 +27,11 @@ class VISAWarning extends VISAStatus {
 
 class VISAError extends VISAStatus implements Exception {
   VISAError({required int code, required String identifier, required String message}) : super(code: code, identifier: identifier, message: message);
+
+  @override
+  String toString() {
+    return jsonEncode(this.toJson());
+  }
 }
 
 /// SUCCESS
